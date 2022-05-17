@@ -11,6 +11,8 @@ const app = express()
 // 中间件 为了解析body的json为普通对象
 app.use(morgan('dev'))
 app.use(express.json())
+// 从文件夹中提供静态文件（http://127.0.0.1:3000/img/pin.png，在浏览器地址栏中这样访问）
+app.use(express.static(`${__dirname}/public`))
 
 app.use((req, res, next) => {
   console.log('hello from the middleware')
