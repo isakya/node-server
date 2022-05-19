@@ -1,4 +1,6 @@
 const mongoose = require('mongoose')
+const slugify = require('slugify')
+
 const tourSchema = new mongoose.Schema({
   name: {
     type: String,
@@ -7,6 +9,7 @@ const tourSchema = new mongoose.Schema({
     unique: true,
     trim: true
   },
+  slug: String,
   duration: {
     type: Number,
     required: [true, 'A tour must have a duration'],
@@ -70,6 +73,23 @@ tourSchema.virtual('durationWeeks').get(function () {
   return this.duration / 7 // 因为要用到this所以不用箭头函数
 })
 
+// mongoose的 DOCUMENT 中间件, runs before .save()保存 and .create()创建, 可以在这两个动作之前先拿到数据对其进行处理
+tourSchema.pre('save', function (next) {
+  this.slug = slugify(this.name, { lower: true })
+  next()
+})
+
+tourSchema.pre('save', function (next) {
+  console.log('Will save document...')
+  next()
+})
+
+// post不用this 因为他已经有文档了
+tourSchema.post('save', function (doc, next) {
+  console.log(doc)
+  // 最后一个中间件可以不写next，但最好带上
+  next()
+})
 
 const Tour = mongoose.model('Tour', tourSchema)
 
