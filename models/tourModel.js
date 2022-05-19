@@ -57,7 +57,19 @@ const tourSchema = new mongoose.Schema({
   // 为日期格式，mongo会将传入的值解析为日期，如果格式不对就会报错
   startDates: [Date],
 
+}, {
+  // 虚拟数据转换格式
+  toJSON: { virtuals: true },
+  toObject: { virtuals: true }
+}
+
+)
+
+// 虚拟数据模型，不会出现在数据库中，但输出数据库中的数据时候才会出现,所以数据库查询方法对它没用
+tourSchema.virtual('durationWeeks').get(function () {
+  return this.duration / 7 // 因为要用到this所以不用箭头函数
 })
+
 
 const Tour = mongoose.model('Tour', tourSchema)
 
