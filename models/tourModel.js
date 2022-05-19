@@ -50,7 +50,9 @@ const tourSchema = new mongoose.Schema({
   images: [String],
   createdAt: {
     type: Date,
-    default: Date.now()
+    default: Date.now(),
+    // 请求时不返回创建时间
+    select: false
   },
   // 为日期格式，mongo会将传入的值解析为日期，如果格式不对就会报错
   startDates: [Date],
