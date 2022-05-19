@@ -1,3 +1,7 @@
+// 脚本文件
+// 导入（json）文件中的数据到数据库中\删除数据库中的数据
+
+
 const fs = require('fs')
 const mongoose = require('mongoose')
 const dotenv = require('dotenv')
