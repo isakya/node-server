@@ -15,6 +15,9 @@ const router = express.Router()
 // 简化
 router.route('/top-5-cheap').get(tourController.aliasTopTours, tourController.getAllTours)
 
+router.route('/tour-stats').get(tourController.getTourStats)
+router.route('/monthlu-plan/:year').get(tourController.getMonthlyPlan)
+
 router
   .route('/')
   .get(tourController.getAllTours)
