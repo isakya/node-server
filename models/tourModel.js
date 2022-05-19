@@ -59,7 +59,10 @@ const tourSchema = new mongoose.Schema({
   },
   // 为日期格式，mongo会将传入的值解析为日期，如果格式不对就会报错
   startDates: [Date],
-
+  secretTour: {
+    type: Boolean,
+    default: false
+  }
 }, {
   // 虚拟数据转换格式
   toJSON: { virtuals: true },
@@ -73,7 +76,8 @@ tourSchema.virtual('durationWeeks').get(function () {
   return this.duration / 7 // 因为要用到this所以不用箭头函数
 })
 
-// mongoose的 DOCUMENT 中间件, runs before .save()保存 and .create()创建, 可以在这两个动作之前先拿到数据对其进行处理
+// 创建中间件
+// mongoose的 创建 DOCUMENT 中间件, runs before .save()保存 and .create()创建, 可以在这两个动作之前先拿到数据对其进行处理
 tourSchema.pre('save', function (next) {
   this.slug = slugify(this.name, { lower: true })
   next()
@@ -84,12 +88,27 @@ tourSchema.pre('save', function (next) {
   next()
 })
 
-// post不用this 因为他已经有文档了
+// post不用this 因为他已经在数据库中有文档了
 tourSchema.post('save', function (doc, next) {
   console.log(doc)
   // 最后一个中间件可以不写next，但最好带上
   next()
 })
+
+// 查询中间件
+// 适用于 find() 但不适用于其他findxxx 如 findById
+// tourSchema.pre('find', function (next) {
+// 用正则就可以匹配所有的find
+tourSchema.pre(/^find/, function (next) {
+  this.find({ secretTour: { $ne: true } })
+  next()
+})
+
+tourSchema.post(/^find/, function (docs, next) {
+  console.log(docs)
+  next()
+})
+
 
 const Tour = mongoose.model('Tour', tourSchema)
 
