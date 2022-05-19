@@ -41,7 +41,19 @@ exports.getAllTours = async (req, res) => {
     // const tours = await Tour.find().where('duration').equals(5).wheree('difficulty').equals('easy')
 
     // ③
-    const query = Tour.find(JSON.parse(queryStr))
+    let query = Tour.find(JSON.parse(queryStr))
+
+    // 3) Sorting
+    if (req.query.sort) {
+      // 这样写mongoose会自动帮我们排序默认升序，sort=-price 带负号为降序
+      const sortBy = req.query.sort.split(',').join(' ')
+      // console.log(sortBy)
+      query = query.sort(sortBy)
+      // sortBy: sort('price ratingsAverage')
+    } else {
+      // 默认按最新时间排序
+      query = query.sort('-createdAt')
+    }
 
     // Execute query
     const tours = await query
