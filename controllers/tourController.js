@@ -16,7 +16,6 @@ const Tour = require('./../models/tourModel')
 
 exports.getAllTours = async (req, res) => {
   try {
-
     // Build the query
     // 1) Filtering
     const queryObj = { ...req.query }
@@ -27,9 +26,7 @@ exports.getAllTours = async (req, res) => {
     let queryStr = JSON.stringify(queryObj)
     queryStr = queryStr.replace(/\b(gte|gt|lte|lt)\b/g, match => `$${match}`)
     console.log(JSON.parse(queryStr))
-
     // {difficulty: 'easy', duration: {$gte: 5}}
-
 
     // ①
     // const tours = await Tour.find({
@@ -63,6 +60,21 @@ exports.getAllTours = async (req, res) => {
     } else {
       // 返回字段不包含__v
       query = query.select('-__v')
+    }
+
+    // 5) Pagination
+    // skip：跳过
+    // page=2&limit=10, 1-10 page 1, 11-29, page 2, 21-30, page 3
+    const page = req.query.page * 1 || 1
+    const limit = req.query.limit * 1 || 100
+    const skip = (page - 1) * limit
+    query = query.skip(skip).limit(limit)
+
+    if (req.query.page) {
+      // 返回该表所有数据的数量
+      const numTours = await Tour.countDocuments()
+      // 如果在这抛出错误，那在try catch代码中 会立马跳到catch阶段
+      if (skip >= numTours) throw new Error('This page does not exist!')
     }
 
     // Execute query
@@ -160,5 +172,4 @@ exports.deleteTour = async (req, res) => {
       message: err
     })
   }
-
 }
