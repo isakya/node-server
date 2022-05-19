@@ -13,6 +13,8 @@ const router = express.Router()
 // Add it to the post handler stack 
 
 // 简化
+router.route('/top-5-cheap').get(tourController.aliasTopTours, tourController.getAllTours)
+
 router
   .route('/')
   .get(tourController.getAllTours)
