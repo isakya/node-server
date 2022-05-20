@@ -90,7 +90,7 @@ tourSchema.pre('save', function (next) {
 
 // post不用this 因为他已经在数据库中有文档了
 tourSchema.post('save', function (doc, next) {
-  console.log(doc)
+  // console.log(doc)
   // 最后一个中间件可以不写next，但最好带上
   next()
 })
@@ -105,10 +105,16 @@ tourSchema.pre(/^find/, function (next) {
 })
 
 tourSchema.post(/^find/, function (docs, next) {
-  console.log(docs)
+  // console.log(docs)
   next()
 })
 
+// 聚合管道中间件
+tourSchema.pre('aggregate', function (next) {
+  this.pipeline().unshift({ $match: { secretTour: { $ne: true } } })
+  console.log(this.pipeline())
+  next()
+})
 
 const Tour = mongoose.model('Tour', tourSchema)
 
