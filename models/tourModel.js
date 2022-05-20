@@ -7,7 +7,10 @@ const tourSchema = new mongoose.Schema({
     required: [true, 'A tour must have a name'],
     // 值必须唯一
     unique: true,
-    trim: true
+    trim: true,
+    // 数据验证：默认开启，也可在Controller，的runValidators: false 更新创建文档函数中传入它来关闭
+    maxlength: [40, 'A tour name must have less or equal then 40 characters'],
+    minlength: [10, 'A tour name must have more or equal then 40 characters'],
   },
   slug: String,
   duration: {
@@ -20,11 +23,19 @@ const tourSchema = new mongoose.Schema({
   },
   difficulty: {
     type: String,
-    required: [true, 'A tour must have a difficulty']
+    required: [true, 'A tour must have a difficulty'],
+    // 验证难易度必须为这三个枚举值
+    enum: {
+      values: ['easy', 'medium', 'difficult'],
+      message: 'Difficulty is either: easy, medium, difficult'
+    }
   },
   ratingsAverage: {
     type: Number,
-    default: 4.5
+    default: 4.5,
+    // 验证评分为1-5直接 包括1和5
+    min: [1, 'Rating must be above 1'],
+    max: [5, 'Rating must be below 5.0']
   },
   ratingsQuantity: {
     type: Number,
