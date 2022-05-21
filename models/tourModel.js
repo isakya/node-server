@@ -1,5 +1,7 @@
 const mongoose = require('mongoose')
 const slugify = require('slugify')
+// 用validator先得npm i validator
+const validator = require('validator')
 
 const tourSchema = new mongoose.Schema({
   name: {
@@ -11,6 +13,7 @@ const tourSchema = new mongoose.Schema({
     // 数据验证：默认开启，也可在Controller，的runValidators: false 更新创建文档函数中传入它来关闭
     maxlength: [40, 'A tour name must have less or equal then 40 characters'],
     minlength: [10, 'A tour name must have more or equal then 40 characters'],
+    validate: [validator.isAlpha, 'Tour name must only contain characters']
   },
   slug: String,
   duration: {
@@ -45,7 +48,18 @@ const tourSchema = new mongoose.Schema({
     type: Number,
     required: [true, 'A tour must have a price']
   },
-  priceDiscount: Number,
+  priceDiscount: {
+    type: Number,
+    // 自定义验证规则
+    validate: {
+      validator: function (val) {
+        // this only points to current doc on NEW document creation
+        return val < this.price // 100 < 200
+      },
+      // 这个VALUE 是个变量 等于val
+      message: 'Discount price ({VALUE}) should be below regular price'
+    }
+  },
   summary: {
     type: String,
     // 删除字符开头和结尾的空格符
