@@ -14,7 +14,11 @@ exports.getAllTours = async (req, res) => {
   try {
     // Execute query
     // 因为返回的是this所以可以一直调用实例里面的方法
-    const features = new APIFeatures(Tour.find(), req.query).filter().sort().limitFields().paginate()
+    const features = new APIFeatures(Tour.find(), req.query)
+      .filter()
+      .sort()
+      .limitFields()
+      .paginate()
     const tours = await features.query // 等待query有值
 
     // Send response
