@@ -31,12 +31,28 @@ app.use('/api/v1/users', userRouter)
 // 如果以上所有路由都匹配不到就执行这个中间件
 // all匹配所有类型请求
 app.all('*', (req, res, next) => {
-  res.status(404).json({
-    status: 'fail',
-    // req.originalUrl 如 /api/tours
-    message: `Can't find ${req.originalUrl} on this server!`
+  // res.status(404).json({
+  //   status: 'fail',
+  //   // req.originalUrl 如 /api/tours
+  //   message: `Can't find ${req.originalUrl} on this server!`
+  // })
+  const err = new Error(`Can't find ${req.originalUrl} on this server!`)
+  err.status = 'fail'
+  err.statusCode = 404
+  // 把错误参数传递给下一个中间件
+  next(err)
+})
+
+// 集中式错误处理中间件
+app.use((err, req, res, next) => {
+  // 状态码
+  err.statusCode = err.statusCode || 500
+  // 状态信息
+  err.status = err.status || 'error'
+  res.status(err.statusCode).json({
+    status: err.status,
+    message: err.message
   })
-  next()
 })
 
 // 4) start server
