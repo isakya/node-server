@@ -6,6 +6,7 @@ class AppError extends Error {
     this.statusCode = statusCode
     // String.startsWith 查看字符串是否以指定的子字符串开头。
     this.status = `${statusCode}`.startsWith('4') ? 'fail' : 'error'
+    // 判断错误是否来自本server，有可能是第三方包的错误
     this.isOperational = true
 
     // 由于Error.captureStackTrace()可以返回调用堆栈信息，因此在自定义Error类的内部经常会使用该函数，用以在error对象上添加合理的stack属性。上文中的MyError类即是一个最简单的例子。
