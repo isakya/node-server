@@ -45,7 +45,7 @@ app.all('*', (req, res, next) => {
   // err.status = 'fail'
   // err.statusCode = 404
   // 把错误参数传递给下一个中间件
-  next(new AppError(`Can't find ${req.originalUrl} on this server!`))
+  next(new AppError(`Can't find ${req.originalUrl} on this server!`, 404))
 })
 
 // 集中式错误处理中间件

@@ -1,5 +1,5 @@
 module.exports = (err, req, res, next) => {
-  // stack 堆栈
+  // stack 堆栈跟踪
   console.log(err.stack)
   // 状态码
   err.statusCode = err.statusCode || 500
