@@ -16,10 +16,6 @@ app.use(express.json())
 // 从文件夹中提供静态文件（http://127.0.0.1:3000/img/pin.png，在浏览器地址栏中这样访问）
 app.use(express.static(`${__dirname}/public`))
 
-app.use((req, res, next) => {
-  console.log('hello from the middleware')
-  next()
-})
 
 app.use((req, res, next) => {
   req.requestTime = new Date().toISOString()
@@ -29,10 +25,19 @@ app.use((req, res, next) => {
 // 2) route handlers
 
 // 3)route
-
 app.use('/api/v1/tours', tourRouter)
 app.use('/api/v1/users', userRouter)
 
-// 4) start server
+// 如果以上所有路由都匹配不到就执行这个中间件
+// all匹配所有类型请求
+app.all('*', (req, res, next) => {
+  res.status(404).json({
+    status: 'fail',
+    // req.originalUrl 如 /api/tours
+    message: `Can't find ${req.originalUrl} on this server!`
+  })
+  next()
+})
 
+// 4) start server
 module.exports = app
