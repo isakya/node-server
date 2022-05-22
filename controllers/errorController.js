@@ -1,3 +1,11 @@
+const AppError = require('./../utils/appError')
+
+const handleCastErrorDB = err => {
+  const message = `Invalid ${err.path}: ${err.value}`
+  return new AppError(message, 400)
+}
+
+
 const sendErrorDev = (err, res) => {
   res.status(err.statusCode).json({
     status: err.status,
@@ -28,7 +36,7 @@ const sendErrorProd = (err, res) => {
 
 module.exports = (err, req, res, next) => {
   // stack 堆栈跟踪
-  console.log(err.stack)
+  // console.log(err.stack)
   // 状态码
   err.statusCode = err.statusCode || 500
   // 状态信息
@@ -37,6 +45,10 @@ module.exports = (err, req, res, next) => {
   if (process.env.NODE_ENV === 'development') {
     sendErrorDev(err, res)
   } else if (process.env.NODE_ENV === 'production') {
-    sendErrorProd(err, res)
+    let error = { ...err }
+    if (error.name === 'CastError') {
+      error = handleCastErrorDB(error)
+    }
+    sendErrorProd(error, res)
   }
 }
