@@ -24,6 +24,16 @@ mongoose
 // console.log(process.env) // node内部的环境变量
 
 const port = process.env.PORT || 3000
-app.listen(port, () => {
+const server = app.listen(port, () => {
   console.log(`App runing on port ${port}...`)
+})
+
+process.on('unhandledRejection', err => {
+  console.log(err.name, err.message)
+  console.log('UNHANDLER REJECTION! Shutting down...')
+  // 关闭服务器
+  server.close(() => {
+    // 终止当前仍在运行的所有请求
+    process.exit(1)
+  })
 })
