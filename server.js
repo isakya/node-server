@@ -1,5 +1,13 @@
 const mongoose = require('mongoose')
 const dotenv = require('dotenv')
+
+// 捕获未捕获的异常
+process.on('uncaughtException', err => {
+  console.log('UNCAUGHT EXCEPTION! Shutting down...')
+  console.log(err.name, err.message)
+  process.exit(1)
+})
+
 const app = require('./app')
 dotenv.config({ path: './config.env' }) // 用来这个dotenv注册env配置文件之后就可以全局用process.xx来访问env里定义的环境变量
 
@@ -29,11 +37,15 @@ const server = app.listen(port, () => {
 })
 
 process.on('unhandledRejection', err => {
-  console.log(err.name, err.message)
   console.log('UNHANDLER REJECTION! Shutting down...')
+  console.log(err.name, err.message)
   // 关闭服务器
   server.close(() => {
     // 终止当前仍在运行的所有请求
     process.exit(1)
   })
 })
+
+
+
+
