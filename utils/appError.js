@@ -2,7 +2,6 @@ class AppError extends Error {
   constructor(message, statusCode) {
     // 等同于 new Error(message)
     super(message)
-
     this.statusCode = statusCode
     // String.startsWith 查看字符串是否以指定的子字符串开头。
     this.status = `${statusCode}`.startsWith('4') ? 'fail' : 'error'

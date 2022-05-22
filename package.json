@@ -5,8 +5,9 @@
   "main": "index.js",
   "scripts": {
     "start": "nodemon server.js",
-    "start:prod": "SET NODE_ENV=production & nodemon server.js",
-    "debug": "ndb server.js"
+    "start:prod": "SET NODE_ENV=production& nodemon server.js",
+    "debug": "ndb server.js",
+    "debugprod": "SET NODE_ENV=production& ndb server.js"
   },
   "keywords": [],
   "author": "",

@@ -5,6 +5,12 @@ const handleCastErrorDB = err => {
   return new AppError(message, 400)
 }
 
+const handleDuplicateFieldsDB = err => {
+  const value = err.errmsg.match(/(["'])(\\?.)*\1/)[0]
+  const message = `Duplicate field value: ${value}. please use another value`
+  return new AppError(message, 400)
+}
+
 
 const sendErrorDev = (err, res) => {
   res.status(err.statusCode).json({
@@ -41,14 +47,15 @@ module.exports = (err, req, res, next) => {
   err.statusCode = err.statusCode || 500
   // 状态信息
   err.status = err.status || 'error'
-
   if (process.env.NODE_ENV === 'development') {
     sendErrorDev(err, res)
   } else if (process.env.NODE_ENV === 'production') {
     let error = { ...err }
-    if (error.name === 'CastError') {
-      error = handleCastErrorDB(error)
-    }
+    // console.log(error, 99999)
+    // _id 长度与类型不同的报错信息
+    if (error.name === 'CastError') error = handleCastErrorDB(error)
+    // name 重复的报错信息
+    if (error.code === 11000) error = handleDuplicateFieldsDB(error)
     sendErrorProd(error, res)
   }
 }

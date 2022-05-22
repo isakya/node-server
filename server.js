@@ -14,7 +14,8 @@ mongoose
     // 处理一些弃用警告
     useNewUrlParser: true,
     useCreateIndex: true,
-    useFindAndModify: false
+    useFindAndModify: false,
+    // useUnifiedTopology: true
   }).then(() => console.log('DB connection successfully!')
   )
 
