@@ -23,7 +23,8 @@ mongoose
     useNewUrlParser: true,
     useCreateIndex: true,
     useFindAndModify: false,
-    // useUnifiedTopology: true
+    // 去除控制台的某个警告
+    useUnifiedTopology: true
   }).then(() => console.log('DB connection successfully!')
   )
 
