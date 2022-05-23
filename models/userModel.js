@@ -19,7 +19,9 @@ const userSchema = new mongoose.Schema({
   password: {
     type: String,
     required: [true, 'Please provide a password'],
-    minlength: 8
+    minlength: 8,
+    // 获取信息时不返回该字段
+    select: false
   },
   passwordConfirm: {
     type: String,
@@ -34,7 +36,7 @@ const userSchema = new mongoose.Schema({
   }
 })
 
-// 
+// 密码加密
 userSchema.pre('save', async function (next) {
   // Only run this function if password was actually modified
   if (!this.isModified('password')) return next()
@@ -46,6 +48,13 @@ userSchema.pre('save', async function (next) {
   this.passwordConfirm = undefined
   next()
 })
+
+// 判断密码是否相同
+userSchema.methods.correctPassword = async function (candidatePassword, userPassword) {
+  // 使用bcrypt的方法之直接比较两个密码是否一样
+  // 返回Boolean
+  return await bcrypt.compare(candidatePassword, userPassword)
+}
 
 const User = mongoose.model('User', userSchema)
 
