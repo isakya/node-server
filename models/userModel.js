@@ -33,7 +33,8 @@ const userSchema = new mongoose.Schema({
       },
       message: 'Passwords are not the same!'
     }
-  }
+  },
+  passwordChangedAt: Date
 })
 
 // 密码加密
@@ -54,6 +55,18 @@ userSchema.methods.correctPassword = async function (candidatePassword, userPass
   // 使用bcrypt的方法之直接比较两个密码是否一样
   // 返回Boolean
   return await bcrypt.compare(candidatePassword, userPassword)
+}
+
+// 判断用户是否在发送token后修改了密码
+userSchema.methods.changedPasswordAfter = function (JWTTimestamp) {
+  if (this.passwordChangedAt) {
+    // 10进制
+    const changedTimestamp = parseInt(this.passwordChangedAt.getTime() / 1000, 10)
+    console.log(changedTimestamp, JWTTimestamp)
+    return JWTTimestamp < changedTimestamp
+  }
+  // False means NOT changed
+  return false
 }
 
 const User = mongoose.model('User', userSchema)

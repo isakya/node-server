@@ -29,6 +29,7 @@ mongoose
   )
 
 
+
 // console.log(app.get('env')) // express 的环境变量
 // console.log(process.env) // node内部的环境变量
 

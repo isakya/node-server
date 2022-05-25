@@ -16,6 +16,12 @@ const handleValidationErrorDB = err => {
   return new AppError(message, 400)
 }
 
+const handleJWTError = () => {
+  return new AppError('Invalid token. Please log in again!', 401)
+}
+
+const handleJWTExpiredError = () => new AppError('Your token has expired! Please login again', 401)
+
 const sendErrorDev = (err, res) => {
   res.status(err.statusCode).json({
     status: err.status,
@@ -28,9 +34,10 @@ const sendErrorDev = (err, res) => {
 const sendErrorProd = (err, res) => {
   // Operational, trusted error: send message to client
   if (err.isOperational) {
+    // console.log(err.message)
     res.status(err.statusCode).json({
       status: err.status,
-      message: err.message,
+      message: err.message || err.msg
     })
     // Programming or other unknown error: don't leak error details
   } else {
@@ -61,6 +68,10 @@ module.exports = (err, req, res, next) => {
     // name 重复的报错信息
     if (error.code === 11000) error = handleDuplicateFieldsDB(error)
     if (error.name === 'validationError') error = handleValidationErrorDB(error)
+    // token错误
+    if (error.name === 'JsonWebTokenError') error = handleJWTError()
+    // token过期提示
+    if (error.name === 'TokenExpiredError') error = handleJWTExpiredError()
     sendErrorProd(error, res)
   }
 }
